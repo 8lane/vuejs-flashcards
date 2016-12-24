@@ -1,0 +1,20 @@
+.carousel-cell {
+  min-width: 320px;
+  width: 60%;
+  height: 200px;
+  margin-right: 10px;
+  background: #8C8;
+  border-radius: 5px;
+  padding: 3vw;
+}
+
+.fc-card {
+  display: table;
+}
+
+.fc-card__text {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 8vw;
+  text-align: center;
+}

@@ -1,0 +1,123 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="node_modules/material-design-lite/material.min.js"></script>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/firebase/firebase.js"></script>
+    <script src="node_modules/vuefire/dist/vuefire.js"></script>
+    <link rel="stylesheet" href="node_modules/material-design-lite/material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="main.css" rel="stylesheet" />
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="fc-app">
+      <button @click="toggleAdminMode">admin</button>
+      <div id="fc-cards" class="fc-cards main-carousel">
+        <fc-card
+          v-for="(card, index) in cards"
+          v-bind:card="card"
+          v-bind:index="index"
+          v-bind:editable="cardsEditable"
+          v-on:edit="editCard(card)"
+          v-on:remove="removeCard(card)">
+        </fc-card>
+      </div>
+      <form v-show="cardsEditable" v-on:submit.prevent>
+        <div class="mdl-textfield mdl-js-textfield">
+          <input id="fc-new-card" class="mdl-textfield__input" type="text" v-model="cardInput">
+          <label for="fc-new-card" class="mdl-textfield__label">Add a new flashcard</label>
+          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="addCard">Create</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      /* Init Firebase */
+      var firebaseApp = firebase.initializeApp({
+        apiKey: "AIzaSyCGc_fAzVNfsoxzZMrjs9MVa80fCqpHKOo",
+        authDomain: "flash-cards-cbaad.firebaseapp.com",
+        databaseURL: "https://flash-cards-cbaad.firebaseio.com",
+        storageBucket: "flash-cards-cbaad.appspot.com",
+        messagingSenderId: "133889146168"
+      }).database();
+
+      /* Reference Firebase DB */
+      var cardsRef = firebaseApp.ref('cards');
+
+      /* Init Vue JS */
+      var app = new Vue({
+        el: '#fc-app',
+        data: {
+          title: 'Flashcards',
+          cardInput: '',
+          cardsEditable: false
+        },
+        updated: function() {
+
+        },
+        firebase: {
+          cards: cardsRef.limitToLast(25)
+        },
+        methods: {
+          addCard (e) {
+            cardsRef.push({ text: this.cardInput });
+          },
+          editCard(card) {
+            cardsRef.child(card['.key']).child('text').set(card.editedText)
+          },
+          removeCard(card) {
+            cardsRef.child(card['.key']).remove();
+          },
+          toggleAdminMode() {
+            this.cardsEditable = !this.cardsEditable;
+          }
+        }
+      });
+
+      Vue.component('fc-card', {
+        data: function() {
+          return {
+            showEditForm: false
+          }
+        },
+        mounted: function() {
+          console.log('repos');
+        },
+        methods: {
+          toggleEditForm($event) {
+            if($event && $event.relatedTarget && $event.relatedTarget.classList.contains('btn--submit')) {
+              return;
+            }
+
+            this.showEditForm = !this.showEditForm;
+          },
+          editCard() {
+            this.$emit('edit');
+            this.toggleEditForm();
+          }
+        },
+        template: '\
+          <div class="fc-card carousel-cell">\
+            <h2 class="fc-card__text">{{ card.text }}</h2>\
+            <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">X</button>\
+            <button v-if="editable" class="btn btn--submit" v-on:click="toggleEditForm()">edit</button>\
+            <form v-if="showEditForm" v-on:submit.prevent>\
+              <input v-focus v-on:blur="toggleEditForm($event)" v-model="card.editedText" placeholder="Edit card"/>\
+              <button class="btn btn--submit" v-if="showEditForm" v-on:click="editCard()">update card</button>\
+            </form>\
+          </div class="card">\
+        ',
+        props: ['card', 'editable']
+      })
+
+      Vue.directive('focus', {
+        inserted: function (el) {
+          el.focus()
+        }
+      })
+
+    </script>
+  </body>
+</html>
