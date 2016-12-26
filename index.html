@@ -75,8 +75,11 @@
           card: {
             title: '',
             message: '',
-            edited: {},
-            bgColor: 'cornflowerblue'
+            bgColor: 'cornflowerblue',
+            edited: {
+              title: '',
+              message: ''
+            }
           }
         },
         updated: function() {
@@ -120,7 +123,11 @@
           return {
             showEditForm: false,
             isMessageToggled: false,
-            isActive: false
+            isActive: false,
+            cardEdited: {
+              title: this.card.title,
+              message: this.card.message
+            }
           }
         },
         methods: {
@@ -131,9 +138,11 @@
 
             this.showEditForm = !this.showEditForm;
           },
-          onEditCard() {
-            this.$emit('edit');
+          onEditCard(edited) {
+            this.card.title = this.cardEdited.title;
+            this.card.message = this.cardEdited.message;
             this.onToggleEditForm();
+            this.$emit('edit');
           },
           onToggleMessage() {
             this.isMessageToggled = !this.isMessageToggled;
@@ -149,11 +158,11 @@
                 <p class="fc-card__message">{{ card.message }}</p>\
               </div>\
               <div class="fc-card__controls">\
-                <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">X</button>\
+                <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">&times;</button>\
                 <button v-if="editable" class="btn btn--submit" v-on:click="onToggleEditForm()">edit</button>\
                 <form v-if="showEditForm" v-on:submit.prevent>\
-                  <input v-focus v-on:blur="onToggleEditForm($event)" v-model="card.edited.title" />\
-                  <input v-on:blur="onToggleEditForm($event)" v-model="card.edited.message" />\
+                  <input name="title" v-focus v-model="cardEdited.title" />\
+                  <input name="message" v-model="cardEdited.message" />\
                   <button class="btn btn--submit" v-if="showEditForm" v-on:click="onEditCard()">update card</button>\
                 </form>\
               </div>\

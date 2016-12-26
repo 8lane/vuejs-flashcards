@@ -13,40 +13,32 @@
 }
 
 .fc-card.active {
-  -webkit-animation: utariAccept 0.6s forwards;
-	animation: utariAccept 0.6s forwards;
-	-webkit-animation-timing-function: ease-in;
+	animation: cardAnimateOut 0.6s forwards;
 	animation-timing-function: ease-in;
 }
 
 
 /* https://tympanus.net/Development/CardStackEffects/ */
-@keyframes utariAccept {
+@keyframes cardAnimateOut {
 	40% {
-		-webkit-animation-timing-function: cubic-bezier(0.4,1,0.3,1);
 		animation-timing-function: cubic-bezier(0.4,1,0.3,1);
-		-webkit-transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
 		transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
 	}
 	100% {
 		opacity: 0;
-		-webkit-transform: translate3d(25vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
 		transform: translate3d(25vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
 	}
 }
 
 /* ...when content has 100% viewport width */
 @media screen and (max-width: 60em) {
-	@keyframes utariAccept {
+	@keyframes cardAnimateOut {
 		40% {
-			-webkit-animation-timing-function: cubic-bezier(0.4,1,0.3,1);
 			animation-timing-function: cubic-bezier(0.4,1,0.3,1);
-			-webkit-transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
 			transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
 		}
 		100% {
 			opacity: 0;
-			-webkit-transform: translate3d(50vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
 			transform: translate3d(50vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
 		}
 	}
