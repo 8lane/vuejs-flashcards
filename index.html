@@ -12,23 +12,41 @@
     </style>
   </head>
   <body>
+
+
     <div id="fc-app">
-      <button @click="toggleAdminMode">admin</button>
+      <button @click="onToggleAdminMode">admin</button>
       <div id="fc-cards" class="fc-cards main-carousel">
         <fc-card
-          v-for="(card, index) in cards"
+          v-for="(card, idx) in cards"
+          v-bind:class="{ active: isActive && idx === 0 }"
           v-bind:card="card"
-          v-bind:index="index"
-          v-bind:editable="cardsEditable"
-          v-on:edit="editCard(card)"
-          v-on:remove="removeCard(card)">
+          v-bind:index="idx"
+          v-bind:editable="isEditMode"
+          v-on:edit="onEditCard(card)"
+          v-on:remove="onRemoveCard(card)">
         </fc-card>
       </div>
-      <form v-show="cardsEditable" v-on:submit.prevent>
+
+
+      <br><br>
+      <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" @click="onShowNewCard">
+        <i class="material-icons">close</i>
+      </button>
+      <br><br>
+
+
+      <form v-show="isEditMode" v-on:submit.prevent>
         <div class="mdl-textfield mdl-js-textfield">
-          <input id="fc-new-card" class="mdl-textfield__input" type="text" v-model="cardInput">
-          <label for="fc-new-card" class="mdl-textfield__label">Add a new flashcard</label>
-          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="addCard">Create</button>
+          <input id="fc-new-card-title" class="mdl-textfield__input" type="text" v-model="card.title" />
+          <label for="fc-new-card-title" class="mdl-textfield__label">Title</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield">
+          <input id="fc-new-card-message" class="mdl-textfield__input" type="text" v-model="card.message" />
+          <label for="fc-new-card-message" class="mdl-textfield__label">Message</label>
+        </div>
+
+          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="onAddCard">Create</button>
         </div>
       </form>
     </div>
@@ -51,27 +69,48 @@
         el: '#fc-app',
         data: {
           title: 'Flashcards',
-          cardInput: '',
-          cardsEditable: false
+          isEditMode: false,
+          isActive: false,
+          bgColors: ['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey'],
+          card: {
+            title: '',
+            message: '',
+            edited: {},
+            bgColor: 'cornflowerblue'
+          }
         },
         updated: function() {
 
         },
         firebase: {
-          cards: cardsRef.limitToLast(25)
+         cards: cardsRef.limitToLast(25)
         },
         methods: {
-          addCard (e) {
-            cardsRef.push({ text: this.cardInput });
+          onAddCard (e) {
+            cardsRef.push({ title: this.card.title, message: this.card.message, bgColor: this._selectBgColor() });
           },
-          editCard(card) {
-            cardsRef.child(card['.key']).child('text').set(card.editedText)
+          onEditCard(card) {
+            cardsRef.child(card['.key']).child('title').set(card.title);
+            cardsRef.child(card['.key']).child('message').set(card.message);
           },
-          removeCard(card) {
+          onRemoveCard(card) {
             cardsRef.child(card['.key']).remove();
           },
-          toggleAdminMode() {
-            this.cardsEditable = !this.cardsEditable;
+          onToggleAdminMode() {
+            this.isEditMode = !this.isEditMode;
+          },
+          onShowNewCard() {
+            this.isActive = true;
+
+            setTimeout((card) => {
+              this.cards.push(this.cards.shift()); /* remove first card and push it to the end of cards array */
+              this.isActive = false;
+            }, 600);
+          },
+          _selectBgColor() {
+            let color = this.bgColors[0]; /* select first color */
+            this.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
+            return color;
           }
         }
       });
@@ -79,34 +118,46 @@
       Vue.component('fc-card', {
         data: function() {
           return {
-            showEditForm: false
+            showEditForm: false,
+            isMessageToggled: false,
+            isActive: false
           }
         },
-        mounted: function() {
-          console.log('repos');
-        },
         methods: {
-          toggleEditForm($event) {
+          onToggleEditForm($event) {
             if($event && $event.relatedTarget && $event.relatedTarget.classList.contains('btn--submit')) {
               return;
             }
 
             this.showEditForm = !this.showEditForm;
           },
-          editCard() {
+          onEditCard() {
             this.$emit('edit');
-            this.toggleEditForm();
+            this.onToggleEditForm();
+          },
+          onToggleMessage() {
+            this.isMessageToggled = !this.isMessageToggled;
           }
         },
         template: '\
-          <div class="fc-card carousel-cell">\
-            <h2 class="fc-card__text">{{ card.text }}</h2>\
-            <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">X</button>\
-            <button v-if="editable" class="btn btn--submit" v-on:click="toggleEditForm()">edit</button>\
-            <form v-if="showEditForm" v-on:submit.prevent>\
-              <input v-focus v-on:blur="toggleEditForm($event)" v-model="card.editedText" placeholder="Edit card"/>\
-              <button class="btn btn--submit" v-if="showEditForm" v-on:click="editCard()">update card</button>\
-            </form>\
+          <div class="fc-card" v-on:click="onToggleMessage()" v-bind:style="{ background: card.bgColor }">\
+            <div class="fc-card__container" v-bind:class="{ showMessage: isMessageToggled }">\
+              <div class="fc-card__meta fc-card__meta--title">\
+                <h2 class="fc-card__title">{{ card.title }}</h2><br>\
+              </div>\
+              <div class="fc-card__meta fc-card__meta--message">\
+                <p class="fc-card__message">{{ card.message }}</p>\
+              </div>\
+              <div class="fc-card__controls">\
+                <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">X</button>\
+                <button v-if="editable" class="btn btn--submit" v-on:click="onToggleEditForm()">edit</button>\
+                <form v-if="showEditForm" v-on:submit.prevent>\
+                  <input v-focus v-on:blur="onToggleEditForm($event)" v-model="card.edited.title" />\
+                  <input v-on:blur="onToggleEditForm($event)" v-model="card.edited.message" />\
+                  <button class="btn btn--submit" v-if="showEditForm" v-on:click="onEditCard()">update card</button>\
+                </form>\
+              </div>\
+            </div>\
           </div class="card">\
         ',
         props: ['card', 'editable']
