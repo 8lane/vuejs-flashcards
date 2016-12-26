@@ -14,42 +14,56 @@
   <body>
 
 
-    <div id="fc-app">
-      <button @click="onToggleAdminMode">admin</button>
-      <div id="fc-cards" class="fc-cards main-carousel">
-        <fc-card
-          v-for="(card, idx) in cards"
-          v-bind:class="{ active: isActive && idx === 0 }"
-          v-bind:card="card"
-          v-bind:index="idx"
-          v-bind:editable="isEditMode"
-          v-on:edit="onEditCard(card)"
-          v-on:remove="onRemoveCard(card)">
-        </fc-card>
-      </div>
-
-
-      <br><br>
-      <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" @click="onShowNewCard">
-        <i class="material-icons">close</i>
-      </button>
-      <br><br>
-
-
-      <form v-show="isEditMode" v-on:submit.prevent>
-        <div class="mdl-textfield mdl-js-textfield">
-          <input id="fc-new-card-title" class="mdl-textfield__input" type="text" v-model="card.title" />
-          <label for="fc-new-card-title" class="mdl-textfield__label">Title</label>
+    <div class="fc-app mdl-layout mdl-js-layout mdl-layout--fixed-header" id="fc-app" v-bind:class="{ 'fc-app--editing': isEditMode }">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">{{ title }}</span>
+          <div class="mdl-layout-spacer"></div>
+          <nav class="mdl-navigation">
+            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="fc-admin-switch">
+              <input type="checkbox" id="fc-admin-switch" class="mdl-switch__input" v-model="isEditMode">
+              <span class="mdl-switch__label"></span>
+            </label>
+          </nav>
         </div>
-        <div class="mdl-textfield mdl-js-textfield">
-          <input id="fc-new-card-message" class="mdl-textfield__input" type="text" v-model="card.message" />
-          <label for="fc-new-card-message" class="mdl-textfield__label">Message</label>
-        </div>
+      </header>
 
-          <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="onAddCard">Create</button>
+      <main class="mdl-layout__content">
+        <div id="fc-cards" class="fc-cards main-carousel">
+          <fc-card
+            v-for="(card, idx) in cards"
+            v-bind:class="{ active: isActive && idx === 0 }"
+            v-bind:card="card"
+            v-bind:index="idx"
+            v-bind:editable="isEditMode"
+            v-on:edit="onEditCard(card)"
+            v-on:remove="onRemoveCard(card)">
+          </fc-card>
+
+          <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" v-show="!isEditMode" @click="onShowNewCard">
+            <i class="material-icons">close</i>
+          </button>
+
+          <form v-show="isEditMode" v-on:submit.prevent>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input id="fc-new-card-title" class="mdl-textfield__input" type="text" v-model="card.title" />
+              <label for="fc-new-card-title" class="mdl-textfield__label">Title</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield">
+              <input id="fc-new-card-message" class="mdl-textfield__input" type="text" v-model="card.message" />
+              <label for="fc-new-card-message" class="mdl-textfield__label">Message</label>
+            </div>
+
+              <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="onAddCard">Create</button>
+            </div>
+          </form>
+
+
         </div>
-      </form>
+      </main>
     </div>
+
+
 
     <script>
       /* Init Firebase */
@@ -99,9 +113,6 @@
           onRemoveCard(card) {
             cardsRef.child(card['.key']).remove();
           },
-          onToggleAdminMode() {
-            this.isEditMode = !this.isEditMode;
-          },
           onShowNewCard() {
             this.isActive = true;
 
@@ -150,7 +161,7 @@
         },
         template: '\
           <div class="fc-card" v-on:click="onToggleMessage()" v-bind:style="{ background: card.bgColor }">\
-            <div class="fc-card__container" v-bind:class="{ showMessage: isMessageToggled }">\
+            <div class="fc-card__container" v-bind:class="{ showMessage: isMessageToggled || editable }">\
               <div class="fc-card__meta fc-card__meta--title">\
                 <h2 class="fc-card__title">{{ card.title }}</h2><br>\
               </div>\
