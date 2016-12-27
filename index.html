@@ -164,8 +164,11 @@
           }
         },
         template: '\
-          <div class="fc-card" v-on:click="onToggleMessage()" v-bind:style="{ background: card.bgColor }">\
-            <div class="fc-card__container" v-bind:class="{ showMessage: isMessageToggled || editable }">\
+          <div class="fc-card" v-on:click="onToggleMessage()" v-bind:class="{ \'fc-card--message-revealed\': isMessageToggled || editable }" v-bind:style="{ background: card.bgColor }">\
+            <div class="fc-card__container">\
+              <div class="fc-card__minimize" v-bind:class="{ \'fc-card__minimize--visible\': isMessageToggled }">\
+                <i class="material-icons">close</i>\
+              </div>\
               <div class="fc-card__meta fc-card__meta--title">\
                 <h2 class="fc-card__title">{{ card.title }}</h2><br>\
               </div>\

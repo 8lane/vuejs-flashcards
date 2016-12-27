@@ -1,16 +1,30 @@
+body {
+  background-color: #171b23;
+}
+
+.mdl-layout__header {
+  background-color: transparent;
+  box-shadow: none;
+}
+
 .fc-app:not(.fc-app--editing) .fc-card {
   position: absolute;
   top: 20vw;
   left: 10vw;
   right: 10vw;
   bottom: 33vw;
+  padding: 3rem;
   background: black;
   color: white;
   max-width: 50rem;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   border-radius: 4px;
   box-shadow: 0 3px 17px rgba(0, 0, 0, 0.24);
+}
+
+.fc-app:not(.fc-app--editing) .fc-card__title {
+  margin: 0;
 }
 
 .fc-app:not(.fc-app--editing) .fc-cards--animating .fc-card {
@@ -24,6 +38,39 @@
 .fc-app:not(.fc-app--editing) .fc-card.active {
 	animation: cardAnimateOut 0.6s forwards;
 	animation-timing-function: ease-in;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card.fc-card--message-revealed {
+  top: 3vw;
+  right: 3vw;
+  left: 3vw;
+  bottom: 20vw;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card__minimize {
+  opacity: 0;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  cursor: pointer;
+  transition: opacity 200ms cubic-bezier(0.4,1,0.3,1);
+}
+
+  .fc-app:not(.fc-app--editing) .fc-card__minimize--visible {
+    opacity: 1;
+    transition-delay: 150ms;
+  }
+
+  .fc-app:not(.fc-app--editing) .fc-card__minimize > i {
+    color: rgb(255, 255, 255);
+    font-size: 2rem;
+  }
+
+
+/* Only enlarge first card */
+.fc-app:not(.fc-app--editing) .fc-card:first-child {
+  transition: top 150ms cubic-bezier(0.4,1,0.3,1);
+  transition-property: top, right, bottom, left;
 }
 
 
@@ -66,24 +113,22 @@
   max-height: 0;
   overflow: hidden;
   transition: all 150ms ease-in;
-  transition-delay: 150ms;
 }
 
 .fc-app:not(.fc-app--editing) .fc-card__message {
   margin: 0;
   opacity: 0;
-  padding: 2rem;
+  font-size: 2.5rem;
   transition: all 120ms ease-in;
 }
 
-.fc-app:not(.fc-app--editing) .showMessage .fc-card__meta--message {
+.fc-app:not(.fc-app--editing) .fc-card--message-revealed .fc-card__meta--message {
   max-height: 80px;
   overflow: initial;
-  background: rgba(0, 0, 0, 0.7);
   transition-delay: 0;
 }
 
-.fc-app:not(.fc-app--editing) .showMessage .fc-card__message {
+.fc-app:not(.fc-app--editing) .fc-card--message-revealed .fc-card__message {
   max-height: 300px;
   opacity: 1;
   transition-delay: 150ms;
