@@ -14,22 +14,22 @@
   <body>
 
 
-    <div class="fc-app mdl-layout mdl-js-layout mdl-layout--fixed-header" id="fc-app" v-bind:class="{ 'fc-app--editing': isEditMode }">
+    <div class="fc-app mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--no-drawer-button" id="fc-app" v-bind:class="{ 'fc-app--editing': isEditMode }">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <span class="mdl-layout-title">{{ title }}</span>
           <div class="mdl-layout-spacer"></div>
           <nav class="mdl-navigation">
-            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="fc-admin-switch">
-              <input type="checkbox" id="fc-admin-switch" class="mdl-switch__input" v-model="isEditMode">
-              <span class="mdl-switch__label"></span>
+            <label class="" for="fc-admin-switch">
+              <i class="material-icons">settings</i>
+              <input type="checkbox" id="fc-admin-switch" class="hidden" v-model="isEditMode">
             </label>
           </nav>
         </div>
       </header>
 
       <main class="mdl-layout__content">
-        <div id="fc-cards" class="fc-cards main-carousel">
+        <div id="fc-cards" class="fc-cards main-carousel" v-bind:class="{ 'fc-cards--animating': isActive }">
           <fc-card
             v-for="(card, idx) in cards"
             v-bind:class="{ active: isActive && idx === 0 }"
@@ -40,7 +40,7 @@
             v-on:remove="onRemoveCard(card)">
           </fc-card>
 
-          <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" v-show="!isEditMode" @click="onShowNewCard">
+          <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" v-show="!isEditMode" @click="onShowNewCard" :disabled="isActive">
             <i class="material-icons">close</i>
           </button>
 
@@ -119,7 +119,7 @@
             setTimeout((card) => {
               this.cards.push(this.cards.shift()); /* remove first card and push it to the end of cards array */
               this.isActive = false;
-            }, 600);
+            }, 700);
           },
           _selectBgColor() {
             let color = this.bgColors[0]; /* select first color */
