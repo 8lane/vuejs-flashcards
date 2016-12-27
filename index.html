@@ -32,6 +32,7 @@
         <div id="fc-cards" class="fc-cards main-carousel" v-bind:class="{ 'fc-cards--animating': isActive }">
           <fc-card
             v-for="(card, idx) in cards"
+            v-if="idx < cardOptions.maxVisible"
             v-bind:class="{ active: isActive && idx === 0 }"
             v-bind:card="card"
             v-bind:index="idx"
@@ -85,7 +86,10 @@
           title: 'Flashcards',
           isEditMode: false,
           isActive: false,
-          bgColors: ['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey'],
+          cardOptions: {
+            maxVisible: 5,
+            bgColors: ['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey']
+          },
           card: {
             title: '',
             message: '',
@@ -122,8 +126,8 @@
             }, 700);
           },
           _selectBgColor() {
-            let color = this.bgColors[0]; /* select first color */
-            this.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
+            let color = this.cardOptions.bgColors[0]; /* select first color */
+            this.cardOptions.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
             return color;
           }
         }
