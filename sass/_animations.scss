@@ -1,0 +1,25 @@
+/* https://tympanus.net/Development/CardStackEffects/ */
+@keyframes cardAnimateOut {
+	40% {
+		animation-timing-function: cubic-bezier(0.4,1,0.3,1);
+		transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
+	}
+	100% {
+		opacity: 0;
+		transform: translate3d(25vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
+	}
+}
+
+/* ...when content has 100% viewport width */
+@media screen and (max-width: 60em) {
+	@keyframes cardAnimateOut {
+		40% {
+			animation-timing-function: cubic-bezier(0.4,1,0.3,1);
+			transform: translate3d(-40%,0,0) scale3d(1.1,1.1,1);
+		}
+		100% {
+			opacity: 0;
+			transform: translate3d(50vw,0,0) translate3d(10%,0,0) scale3d(0.1,0.1,1);
+		}
+	}
+}

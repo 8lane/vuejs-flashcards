@@ -1,0 +1,189 @@
+@import "animations";
+
+body {
+  background-color: #171b23;
+}
+
+.mdl-layout__header {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Card animation styles */
+.fc-app:not( .fc-app--editing ) {
+  .fc-cards {
+    &--animating {
+      .fc-card {
+        transition: transform 200ms cubic-bezier(0.4, 1, 0.3, 1);
+      }
+    }
+
+    &:not( &--animating ) {
+      .fc-card:last-of-type {
+        transform: translateY(-5rem) scale(0.75);
+      }
+    }
+  }
+}
+
+/* Card styles when not in admin mode */
+.fc-app:not( .fc-app--editing ) {
+
+  .fc-cards {
+    &--animating {
+      .fc-card {
+        transition: transform 200ms cubic-bezier(0.4,1,0.3,1);
+      }
+    }
+  }
+
+  .fc-card {
+    position: absolute;
+    top: 20vw;
+    left: 10vw;
+    right: 10vw;
+    bottom: 33vw;
+    padding: 3rem;
+    background: black;
+    color: white;
+    max-width: 50rem;
+    margin: 0 auto;
+    text-align: left;
+    border-radius: 4px;
+    box-shadow: 0 3px 17px rgba(0, 0, 0, 0.24);
+
+    &--leaving {
+      animation: cardAnimateOut 0.6s forwards;
+    	animation-timing-function: ease-in;
+    }
+
+    &__title {
+      margin: 0;
+    }
+  }
+}
+
+
+.fc-app:not(.fc-app--editing) .fc-card.fc-card--message-revealed {
+  top: 3vw;
+  right: 3vw;
+  left: 3vw;
+  bottom: 20vw;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card__minimize {
+  opacity: 0;
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  cursor: pointer;
+  transition: opacity 200ms cubic-bezier(0.4,1,0.3,1);
+}
+
+  .fc-app:not(.fc-app--editing) .fc-card__minimize--visible {
+    opacity: 1;
+    transition-delay: 150ms;
+  }
+
+  .fc-app:not(.fc-app--editing) .fc-card__minimize > i {
+    color: rgb(255, 255, 255);
+    font-size: 2rem;
+  }
+
+
+/* Only enlarge first card */
+.fc-app:not(.fc-app--editing) .fc-card:first-child {
+  transition: top 150ms cubic-bezier(0.4,1,0.3,1);
+  transition-property: top, right, bottom, left;
+}
+
+
+
+.fc-next-card {
+  position: absolute;
+  bottom: 5vw;
+  left: 50%;
+  margin-left: -31px;
+}
+
+
+
+.fc-app:not(.fc-app--editing) .fc-card__meta--message {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 150ms ease-in;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card__message {
+  margin: 0;
+  opacity: 0;
+  font-size: 2.5rem;
+  transition: all 120ms ease-in;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card--message-revealed .fc-card__meta--message {
+  max-height: 80px;
+  overflow: initial;
+  transition-delay: 0;
+}
+
+.fc-app:not(.fc-app--editing) .fc-card--message-revealed .fc-card__message {
+  max-height: 300px;
+  opacity: 1;
+  transition-delay: 150ms;
+}
+
+
+
+
+
+.fc-app:not(.fc-app--editing) .fc-card:nth-child(1) {
+  transform: translateY(0) scale(1);
+  z-index: 5;
+}
+
+
+
+// $max-items: 5;
+// @for $idx from 2 through $max-items {
+//   $scale: 1 - ($idx / 12.5 - 0.10);
+//
+//   .fc-card:nth-child( #{$idx} ) {
+//     transform: translateY( -#{2.5  * $idx}rem ) scale( #{$scale} );
+//     z-index: $max-items - $idx + 1;
+//   }
+// }
+
+.fc-card:nth-child(2) {
+  transform: translateY(-2.5rem) scale(0.9);
+  z-index: 4;
+}
+.fc-cards--animating .fc-card:nth-child(2) {
+  transform: translateY(0) scale(1);
+}
+
+.fc-card:nth-child(3) {
+  transform: translateY(-4rem) scale(0.85);
+  z-index: 3;
+}
+.fc-cards--animating .fc-card:nth-child(3) {
+  transform: translateY(-2.5rem) scale(0.9);
+}
+
+
+.fc-card:nth-child(4) {
+  transform: translateY(-5.5rem) scale(0.8);
+  z-index: 2;
+}
+.fc-cards--animating .fc-card:nth-child(4) {
+  transform: translateY(-4rem) scale(0.85);
+}
+
+
+.fc-card:nth-child(5) {
+  transform: translateY(-7rem) scale(0.75);
+  z-index: 1;
+}
+.fc-cards--animating .fc-card:nth-child(5) {
+  transform: translateY(-5.5rem) scale(0.8);
+}

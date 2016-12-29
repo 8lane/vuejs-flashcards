@@ -33,7 +33,7 @@
           <fc-card
             v-for="(card, idx) in cards"
             v-if="idx < cardOptions.maxVisible"
-            v-bind:class="{ active: isActive && idx === 0 }"
+            v-bind:class="{ 'fc-card--leaving': isActive && idx === 0 }"
             v-bind:card="card"
             v-bind:index="idx"
             v-bind:editable="isEditMode"
