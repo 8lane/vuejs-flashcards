@@ -130,58 +130,36 @@ body {
   }
 }
 
+/* Card animations */
+$total-cards: 5;
+$card-positions: (1: 0rem, 2: -2.5rem, 3: -4rem, 4: -5.5rem, 5: -7rem);
+$card-scalings: (1: 1, 2: 0.9, 3: 0.85, 4: 0.8, 5: 0.75);
+
+@for $idx from 2 through $total-cards {
+  $translate: map-get($card-positions, $idx);
+  $scale: map-get($card-scalings, $idx);
+  $anim-translate: map-get($card-positions, $idx - 1);
+  $anim-scale: map-get($card-scalings, $idx - 1);
+
+  .fc-card {
+    &:nth-child( #{$idx} ) {
+      transform: translateY( #{$translate} ) scale( #{$scale} );
+      z-index: $total-cards - $idx + 1;
+    }
+
+    .fc-cards--animating & {
+      &:nth-child( #{$idx} ) {
+        transform: translateY( #{$anim-translate} ) scale( #{$anim-scale} );
+      }
+    }
+  }
+}
+
+
 /* Next card button */
 .fc-next-card {
   position: fixed;
   bottom: 1.5rem;
   left: 50%;
   margin-left: -31px;
-}
-
-
-
-
-
-// $max-items: 5;
-// @for $idx from 2 through $max-items {
-//   $scale: 1 - ($idx / 12.5 - 0.10);
-//
-//   .fc-card:nth-child( #{$idx} ) {
-//     transform: translateY( -#{2.5  * $idx}rem ) scale( #{$scale} );
-//     z-index: $max-items - $idx + 1;
-//   }
-// }
-
-.fc-card:nth-child(2) {
-  transform: translateY(-2.5rem) scale(0.9);
-  z-index: 4;
-}
-.fc-cards--animating .fc-card:nth-child(2) {
-  transform: translateY(0) scale(1);
-}
-
-.fc-card:nth-child(3) {
-  transform: translateY(-4rem) scale(0.85);
-  z-index: 3;
-}
-.fc-cards--animating .fc-card:nth-child(3) {
-  transform: translateY(-2.5rem) scale(0.9);
-}
-
-
-.fc-card:nth-child(4) {
-  transform: translateY(-5.5rem) scale(0.8);
-  z-index: 2;
-}
-.fc-cards--animating .fc-card:nth-child(4) {
-  transform: translateY(-4rem) scale(0.85);
-}
-
-
-.fc-card:nth-child(5) {
-  transform: translateY(-7rem) scale(0.75);
-  z-index: 1;
-}
-.fc-cards--animating .fc-card:nth-child(5) {
-  transform: translateY(-5.5rem) scale(0.8);
 }
