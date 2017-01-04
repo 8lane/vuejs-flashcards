@@ -6,12 +6,14 @@ var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('browser-sync', function() {
-  browserSync.init({
-      server: {
-          baseDir: "./"
-      }
-  });
+gulp.task('serve', ['sass'], function() {
+
+    browserSync.init({
+        server: "./"
+    });
+
+    gulp.watch("./sass/*.scss", ['sass']);
+    gulp.watch("./*.html").on('change', browserSync.reload);
 });
 
 gulp.task('sass', function () {
@@ -24,7 +26,7 @@ gulp.task('sass', function () {
     }))
     .pipe(sourcemaps.write())
     .pipe(gulp.dest('./'))
-    .pipe(browserSync.reload({ stream: true }));
+    .pipe(browserSync.stream());
 });
 
 gulp.task('watch', ['browser-sync'], function () {
@@ -32,4 +34,4 @@ gulp.task('watch', ['browser-sync'], function () {
     gulp.watch("*.html").on('change', browserSync.reload);
 });
 
-gulp.task('default', ['browser-sync', 'watch']);
+gulp.task('default', ['serve']);
