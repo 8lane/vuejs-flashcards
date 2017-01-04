@@ -61,6 +61,10 @@ body {
       transition-property: top, right, bottom, left;
     }
 
+    &:not( :first-child ) {
+      pointer-events: none;
+    }
+
     &--leaving {
       animation: cardAnimateOut 0.6s forwards;
     	animation-timing-function: ease-in;
