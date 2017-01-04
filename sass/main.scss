@@ -26,6 +26,7 @@ body {
   }
 }
 
+
 /* Card styles when not in admin mode */
 .fc-app:not( .fc-app--editing ) {
 
@@ -34,6 +35,31 @@ body {
       .fc-card {
         transition: transform 200ms cubic-bezier(0.4,1,0.3,1);
       }
+    }
+
+    /* Card animations */
+    $total-cards: 5;
+    $card-positions: (1: 0vw, 2: -2vw, 3: -3.5vw, 4: -5vw, 5: -6.5vw);
+    $card-scalings: (1: 1, 2: 0.9, 3: 0.85, 4: 0.8, 5: 0.75);
+
+    @for $idx from 2 through $total-cards {
+      $translate: map-get($card-positions, $idx);
+      $scale: map-get($card-scalings, $idx);
+      $anim-translate: map-get($card-positions, $idx - 1);
+      $anim-scale: map-get($card-scalings, $idx - 1);
+
+      .fc-card:nth-child( #{$idx} ) {
+        transform: translateY( #{$translate} ) scale( #{$scale} );
+        transform-origin: top;
+        z-index: $total-cards - $idx + 1;
+      }
+
+      &--animating {
+        .fc-card:nth-child( #{$idx} ) {
+          transform: translateY( #{$anim-translate} ) scale( #{$anim-scale} );
+        }
+      }
+
     }
   }
 
@@ -128,33 +154,6 @@ body {
 
   }
 }
-
-/* Card animations */
-$total-cards: 5;
-$card-positions: (1: 0vw, 2: -2vw, 3: -3.5vw, 4: -5vw, 5: -6.5vw);
-$card-scalings: (1: 1, 2: 0.9, 3: 0.85, 4: 0.8, 5: 0.75);
-
-@for $idx from 2 through $total-cards {
-  $translate: map-get($card-positions, $idx);
-  $scale: map-get($card-scalings, $idx);
-  $anim-translate: map-get($card-positions, $idx - 1);
-  $anim-scale: map-get($card-scalings, $idx - 1);
-
-  .fc-card {
-    &:nth-child( #{$idx} ) {
-      transform: translateY( #{$translate} ) scale( #{$scale} );
-      transform-origin: top;
-      z-index: $total-cards - $idx + 1;
-    }
-
-    .fc-cards--animating & {
-      &:nth-child( #{$idx} ) {
-        transform: translateY( #{$anim-translate} ) scale( #{$anim-scale} );
-      }
-    }
-  }
-}
-
 
 /* Next card button */
 .fc-next-card {
