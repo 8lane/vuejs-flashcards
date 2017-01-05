@@ -17,7 +17,7 @@
     <div class="fc-app mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--no-drawer-button" id="fc-app" v-bind:class="{ 'fc-app--editing': isEditMode }">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title">{{ title }}</span>
+          <span class="mdl-layout-title hidden">{{ title }}</span>
           <div class="mdl-layout-spacer"></div>
           <nav class="mdl-navigation">
             <label class="" for="fc-admin-switch">
@@ -32,7 +32,7 @@
         <div id="fc-cards" class="fc-cards main-carousel" v-bind:class="{ 'fc-cards--animating': isActive }">
           <fc-card
             v-for="(card, idx) in cards"
-            v-if="idx < cardOptions.maxVisible"
+            v-if="idx < cardOptions.maxVisible || isEditMode"
             v-bind:class="{ 'fc-card--leaving': isActive && idx === 0 }"
             v-bind:card="card"
             v-bind:index="idx"
@@ -55,7 +55,7 @@
               <label for="fc-new-card-message" class="mdl-textfield__label">Message</label>
             </div>
 
-              <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" @click="onAddCard">Create</button>
+              <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" :disabled="!card.title || !card.message" @click="onAddCard">Create</button>
             </div>
           </form>
 
@@ -127,7 +127,7 @@
           },
           _selectBgColor() {
             let color = this.cardOptions.bgColors[0]; /* select first color */
-            this.cardOptions.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
+          //  this.cardOptions.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
             return color;
           }
         }
@@ -165,24 +165,26 @@
         },
         template: '\
           <div class="fc-card" v-on:click="onToggleMessage()" v-bind:class="{ \'fc-card--message-revealed\': isMessageToggled || editable }" v-bind:style="{ background: card.bgColor }">\
-            <div class="fc-card__container">\
-              <div class="fc-card__minimize" v-bind:class="{ \'fc-card__minimize--visible\': isMessageToggled }">\
-                <i class="material-icons">close</i>\
+            <div class="fc-card__container mdl-grid">\
+              <div class="fc-card__info mdl-cell mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--8-col">\
+                <div class="fc-card__meta fc-card__meta--title">\
+                  <h2 class="fc-card__title">{{ card.title }}</h2>\
+                </div>\
+                <div class="fc-card__meta fc-card__meta--message">\
+                  <p class="fc-card__message">{{ card.message }}</p>\
+                </div>\
               </div>\
-              <div class="fc-card__meta fc-card__meta--title">\
-                <h2 class="fc-card__title">{{ card.title }}</h2><br>\
-              </div>\
-              <div class="fc-card__meta fc-card__meta--message">\
-                <p class="fc-card__message">{{ card.message }}</p>\
-              </div>\
-              <div class="fc-card__controls">\
-                <button v-if="editable" class="btn btn--delete" v-on:click="$emit(\'remove\')">&times;</button>\
-                <button v-if="editable" class="btn btn--submit" v-on:click="onToggleEditForm()">edit</button>\
+              <div class="fc-card__controls mdl-cell mdl-cell--2-col-phone mdl-cell--2-col-tablet mdl-cell--4-col">\
+                <button class="btn btn--submit mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" v-if="editable" v-on:click="onToggleEditForm()">Edit</button>\
+                <button class="btn btn--delete mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" v-if="editable" v-on:click="$emit(\'remove\')">&times;</button>\
                 <form v-if="showEditForm" v-on:submit.prevent>\
                   <input name="title" v-focus v-model="cardEdited.title" />\
                   <input name="message" v-model="cardEdited.message" />\
                   <button class="btn btn--submit" v-if="showEditForm" v-on:click="onEditCard()">update card</button>\
                 </form>\
+              </div>\
+              <div class="fc-card__minimize" v-show="!editable" v-bind:class="{ \'fc-card__minimize--visible\': isMessageToggled }">\
+                <i class="material-icons">close</i>\
               </div>\
             </div>\
           </div class="card">\

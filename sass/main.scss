@@ -9,6 +9,33 @@ body {
   box-shadow: none;
 }
 
+/* Edit Mode */
+.fc-app {
+  &--editing {
+    .fc-cards {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .fc-card {
+      background: transparent !important;
+      color: white;
+
+      &__title,
+      &__message {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      &__controls {
+        text-align: right;
+      }
+
+    }
+  }
+}
+
 /* Card animation styles */
 .fc-app:not( .fc-app--editing ) {
   .fc-cards {
