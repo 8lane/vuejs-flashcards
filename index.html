@@ -127,7 +127,7 @@
           },
           _selectBgColor() {
             let color = this.cardOptions.bgColors[0]; /* select first color */
-          //  this.cardOptions.bgColors.push(this.bgColors.shift()); /* move first color to end of array */
+            this.cardOptions.bgColors.push(this.cardOptions.bgColors.shift()); /* move first color to end of array */
             return color;
           }
         }
