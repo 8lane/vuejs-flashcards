@@ -60,18 +60,24 @@
               <label for="fc-new-card-message" class="mdl-textfield__label">Message</label>
             </div>
 
-              <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" :disabled="!card.title || !card.message" @click="onAddCard">Create</button>
-            </div>
+            <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" :disabled="!card.title || !card.message" @click="onAddCard">Create</button>
           </form>
-
-
         </div>
       </main>
     </div>
 
-
-
     <script>
+      /* Shuffle array function - http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array */
+      Array.prototype.shuffle = function(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+      }
+
       /* Init Firebase */
       var firebaseApp = firebase.initializeApp({
         apiKey: "AIzaSyCGc_fAzVNfsoxzZMrjs9MVa80fCqpHKOo",
@@ -94,7 +100,7 @@
           isMessageToggled: false,
           cardOptions: {
             maxVisible: 5,
-            bgColors: ['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey']
+            bgColors: Array.prototype.shuffle(['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey'])
           },
           card: {
             title: '',
@@ -113,16 +119,20 @@
           onMessageToggled() {
             this.isMessageToggled = !this.isMessageToggled;
           },
+
           onAddCard(e) {
             cardsRef.push({ title: this.card.title, message: this.card.message, bgColor: this._selectBgColor() });
           },
+
           onEditCard(card) {
             cardsRef.child(card['.key']).child('title').set(card.title);
             cardsRef.child(card['.key']).child('message').set(card.message);
           },
+
           onRemoveCard(card) {
             cardsRef.child(card['.key']).remove();
           },
+
           onShowNewCard() {
             if(this.isMessageToggled) {
               this.isMessageToggled = false;
@@ -131,6 +141,8 @@
               this._shuffleCardSet();
             }
           },
+
+          /* Private methods */
           _shuffleCardSet() {
             this.isLeaving = true;
 
@@ -139,6 +151,7 @@
               this.isLeaving = false;
             }, 600);
           },
+
           _selectBgColor() {
             let color = this.cardOptions.bgColors[0]; /* select first color */
             this.cardOptions.bgColors.push(this.cardOptions.bgColors.shift()); /* move first color to end of array */
