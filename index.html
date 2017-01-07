@@ -126,7 +126,7 @@
           onShowNewCard() {
             if(this.isMessageToggled) {
               this.isMessageToggled = false;
-              setTimeout(() => this._shuffleCardSet(), 300);
+              setTimeout(() => this._shuffleCardSet(), 200);
             } else {
               this._shuffleCardSet();
             }
@@ -137,7 +137,7 @@
             setTimeout(() => {
               this.cards.push(this.cards.shift()); /* remove first card and push it to the end of cards array */
               this.isLeaving = false;
-            }, 700);
+            }, 600);
           },
           _selectBgColor() {
             let color = this.cardOptions.bgColors[0]; /* select first color */
