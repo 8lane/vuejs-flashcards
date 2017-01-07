@@ -30,19 +30,23 @@
       </header>
 
       <main class="mdl-layout__content">
-        <div id="fc-cards" class="fc-cards main-carousel" v-bind:class="{ 'fc-cards--animating': isActive }">
+        <div id="fc-cards" class="fc-cards main-carousel" v-bind:class="{ 'fc-cards--animating': isLeaving }">
           <fc-card
             v-for="(card, idx) in cards"
             v-if="idx < cardOptions.maxVisible || isEditMode"
-            v-bind:class="{ 'fc-card--leaving': isActive && idx === 0 }"
+            v-bind:class="{
+              'fc-card--leaving': isLeaving && idx === 0,
+              'fc-card--message-revealed': isMessageToggled && idx === 0 || isEditMode
+            }"
             v-bind:card="card"
             v-bind:index="idx"
             v-bind:editable="isEditMode"
+            v-on:message-toggled="onMessageToggled()"
             v-on:edit="onEditCard(card)"
             v-on:remove="onRemoveCard(card)">
           </fc-card>
 
-          <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" v-show="!isEditMode" @click="onShowNewCard" :disabled="isActive">
+          <button class="fc-next-card mdl-button mdl-js-button mdl-button--fab mdl-button--colored" v-show="!isEditMode" @click="onShowNewCard" :disabled="isLeaving">
             <i class="material-icons">close</i>
           </button>
 
@@ -86,7 +90,8 @@
         data: {
           title: 'Flashcards',
           isEditMode: false,
-          isActive: false,
+          isLeaving: false,
+          isMessageToggled: false,
           cardOptions: {
             maxVisible: 5,
             bgColors: ['cornflowerblue', 'tomato', 'teal', 'mediumspringgreen', 'darkslateblue', 'dimgrey']
@@ -101,14 +106,14 @@
             }
           }
         },
-        updated: function() {
-
-        },
         firebase: {
          cards: cardsRef.limitToLast(25)
         },
         methods: {
-          onAddCard (e) {
+          onMessageToggled() {
+            this.isMessageToggled = !this.isMessageToggled;
+          },
+          onAddCard(e) {
             cardsRef.push({ title: this.card.title, message: this.card.message, bgColor: this._selectBgColor() });
           },
           onEditCard(card) {
@@ -119,11 +124,19 @@
             cardsRef.child(card['.key']).remove();
           },
           onShowNewCard() {
-            this.isActive = true;
+            if(this.isMessageToggled) {
+              this.isMessageToggled = false;
+              setTimeout(() => this._shuffleCardSet(), 300);
+            } else {
+              this._shuffleCardSet();
+            }
+          },
+          _shuffleCardSet() {
+            this.isLeaving = true;
 
-            setTimeout((card) => {
+            setTimeout(() => {
               this.cards.push(this.cards.shift()); /* remove first card and push it to the end of cards array */
-              this.isActive = false;
+              this.isLeaving = false;
             }, 700);
           },
           _selectBgColor() {
@@ -135,11 +148,11 @@
       });
 
       Vue.component('fc-card', {
+        props: ['card', 'editable'],
         data: function() {
           return {
             showEditForm: false,
-            isMessageToggled: false,
-            isActive: false,
+            isLeaving: false,
             cardEdited: {
               title: this.card.title,
               message: this.card.message
@@ -161,13 +174,13 @@
             this.$emit('edit');
           },
           onToggleMessage() {
-            this.isMessageToggled = !this.isMessageToggled;
+            this.$emit('message-toggled');
           }
         },
         template: '\
-          <div class="fc-card" v-on:click="onToggleMessage()" v-bind:class="{ \'fc-card--message-revealed\': isMessageToggled || editable }" v-bind:style="{ background: card.bgColor }">\
-            <div class="fc-card__container mdl-grid">\
-              <div class="fc-card__info mdl-cell mdl-cell--6-col-phone mdl-cell--6-col-tablet mdl-cell--8-col">\
+          <div class="fc-card" v-on:click="onToggleMessage" v-bind:style="{ background: card.bgColor }">\
+            <div class="fc-card__container">\
+              <div class="fc-card__info">\
                 <div class="fc-card__meta fc-card__meta--title">\
                   <h2 class="fc-card__title">{{ card.title }}</h2>\
                 </div>\
@@ -175,7 +188,7 @@
                   <p class="fc-card__message">{{ card.message }}</p>\
                 </div>\
               </div>\
-              <div class="fc-card__controls mdl-cell mdl-cell--2-col-phone mdl-cell--2-col-tablet mdl-cell--4-col">\
+              <div class="fc-card__controls">\
                 <button class="btn btn--submit mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" v-if="editable" v-on:click="onToggleEditForm()">Edit</button>\
                 <button class="btn btn--delete mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" v-if="editable" v-on:click="$emit(\'remove\')">&times;</button>\
                 <form v-if="showEditForm" v-on:submit.prevent>\
@@ -184,13 +197,12 @@
                   <button class="btn btn--submit" v-if="showEditForm" v-on:click="onEditCard()">update card</button>\
                 </form>\
               </div>\
-              <div class="fc-card__minimize" v-show="!editable" v-bind:class="{ \'fc-card__minimize--visible\': isMessageToggled }">\
-                <i class="material-icons">close</i>\
-              </div>\
             </div>\
-          </div class="card">\
-        ',
-        props: ['card', 'editable']
+            <!--<div class="fc-card__minimize" v-show="!editable" v-bind:class="{ \'fc-card__minimize--visible\': isMessageToggled }">\
+              <i class="material-icons">close</i>\
+            </div>-->\
+          </div>\
+        '
       })
 
       Vue.directive('focus', {
